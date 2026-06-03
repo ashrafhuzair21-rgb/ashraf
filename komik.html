@@ -1,0 +1,1192 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  BookOpen, 
+  Crown, 
+  ShieldCheck, 
+  CreditCard, 
+  ChevronLeft, 
+  User, 
+  Home, 
+  Flame, 
+  Sparkles, 
+  Clock, 
+  Lock, 
+  Unlock, 
+  Search,
+  Heart,
+  Share2,
+  Bookmark,
+  Check,
+  AlertCircle,
+  Menu,
+  X,
+  ChevronRight
+} from 'lucide-react';
+
+// === DUMMY DATA KOMIK ===
+const COMICS_DATA = [
+  {
+    id: 'c1',
+    title: 'Gerbang Cakrawala',
+    author: 'Ahmad Wijaya',
+    rating: 4.9,
+    views: '1.2M',
+    synopsis: 'Di dunia di mana manusia bisa membangkitkan kekuatan spiritual melalui gerbang dimensi, seorang pemuda lemah tanpa bakat tidak sengaja menemukan gerbang purba yang telah lama tersegel.',
+    genre: 'Aksi',
+    status: 'Ongoing',
+    premiumOnly: false,
+    bannerColor: 'from-blue-600 to-indigo-900',
+    coverGradient: 'from-blue-500 to-cyan-600',
+    episodes: [
+      { id: 'c1-e1', title: 'Episode 1: Kebangkitan yang Gagal', isPremium: false, content: ['Halaman 1: Langit kota Jakarta tiba-tiba retak...', 'Halaman 2: Bimo menatap gerbang energi biru dengan cemas.', 'Halaman 3: "Bakat spiritualmu adalah nol," ujar penguji dingin.', 'Halaman 4: Bimo tertunduk, meratapi takdirnya yang malang.'] },
+      { id: 'c1-e2', title: 'Episode 2: Suara Misterius', isPremium: false, content: ['Halaman 1: Di malam hari, Bimo mendengar bisikan aneh...', 'Halaman 2: Langkah kakinya menuntun ke ruang bawah tanah tua.', 'Halaman 3: Sebuah kunci batu kuno mulai bersinar merah membara.', 'Halaman 4: "Selamat datang, Pewaris Terakhir," gema suara itu.'] },
+      { id: 'c1-e3', title: 'Episode 3: Menembus Batas (VIP)', isPremium: true, content: ['Halaman 1: Kekuatan luar biasa mengalir ke pembuluh darah Bimo!', 'Halaman 2: Seluruh ruangan bergetar hebat memancarkan aura emas.', 'Halaman 3: Gerbang tak terlihat di dalam jiwanya hancur berkeping-keping.', 'Halaman 4: Kini, perjalanan sesungguhnya baru saja dimulai!'] },
+      { id: 'c1-e4', title: 'Episode 4: Langkah Pertama (VIP)', isPremium: true, content: ['Halaman 1: Bimo menguji kekuatan barunya di hutan terlarang.', 'Halaman 2: Dengan satu pukulan angin, batu besar hancur lebur.', 'Halaman 3: Monster serigala bayangan muncul dari balik semak.', 'Halaman 4: "Mari kita lihat seberapa kuat aku sekarang!" gertak Bimo.'] }
+    ]
+  },
+  {
+    id: 'c2',
+    title: 'Lentera Senja di Jakarta',
+    author: 'Siti Rahma',
+    rating: 4.8,
+    views: '850K',
+    synopsis: 'Kisah romansa hangat antara seorang barista kafe indie yang berjuang mempertahankan kafenya dan seorang ilustrator introvert yang selalu datang menjelang matahari terbenam.',
+    genre: 'Romantis',
+    status: 'Tamat',
+    premiumOnly: false,
+    bannerColor: 'from-rose-500 to-amber-700',
+    coverGradient: 'from-rose-400 to-orange-500',
+    episodes: [
+      { id: 'c2-e1', title: 'Episode 1: Secangkir Kopi Pertama', isPremium: false, content: ['Halaman 1: Aroma robusta menyeruak di Kafe Lentera.', 'Halaman 2: Senja selalu sibuk meracik espresso andalannya.', 'Halaman 3: Lonceng pintu berbunyi, seorang pria basah kuyup karena hujan masuk.', 'Halaman 4: Pandangan mereka bertemu untuk pertama kalinya.'] },
+      { id: 'c2-e2', title: 'Episode 2: Sketsa yang Tertinggal', isPremium: false, content: ['Halaman 1: Pria misterius itu pergi terburu-buru.', 'Halaman 2: Di atas meja kayu, tertinggal sebuah buku gambar kecil.', 'Halaman 3: Senja membukanya dan terkejut melihat sketsa dirinya sedang menyeduh kopi.', 'Halaman 4: Senyum tipis terukir di wajah Senja.'] },
+      { id: 'c2-e3', title: 'Episode 3: Rahasia Seniman Malam (VIP)', isPremium: true, content: ['Halaman 1: Namanya adalah Rian, seorang komikus terkenal yang sedang kehilangan inspirasi.', 'Halaman 2: Rian kembali ke kafe dengan wajah canggung meminta bukunya.', 'Halaman 3: "Terima kasih sudah menjaga sketsaku," bisik Rian pelan.', 'Halaman 4: Mereka berdua akhirnya mengobrol hingga kafe tutup.'] }
+    ]
+  },
+  {
+    id: 'c3',
+    title: 'Kutukan Sumpah Palapa',
+    author: 'Dian & Arya Studio',
+    rating: 4.95,
+    views: '2.1M',
+    synopsis: 'Sebuah komik fantasi-sejarah epik. Ketika artefak kuno Majapahit ditemukan di situs modern Trowulan, kekuatan magis kuno bangkit kembali dan menyeret para arkeolog muda ke pusaran konflik antar klan dinasti masa lalu.',
+    genre: 'Fantasi',
+    status: 'Ongoing',
+    premiumOnly: true, // Komik ini sepenuhnya eksklusif VIP
+    bannerColor: 'from-purple-800 to-emerald-950',
+    coverGradient: 'from-indigo-600 to-emerald-700',
+    episodes: [
+      { id: 'c3-e1', title: 'Episode 1: Situs Trowulan Berbisik (VIP)', isPremium: true, content: ['Halaman 1: Penggalian arkeologi malam hari di Trowulan.', 'Halaman 2: Tanah tiba-tiba ambles, menyingkap peti emas berukir naga.', 'Halaman 3: Guntur menyambar langit yang bersih tanpa awan.', 'Halaman 4: Roh Patih legendaris terbangun dari tidur seribu tahunnya!'] },
+      { id: 'c3-e2', title: 'Episode 2: Penjaga Segel Terakhir (VIP)', isPremium: true, content: ['Halaman 1: Danu merasakan telapak tangannya terbakar tanda mistis.', 'Halaman 2: Makhluk bayangan berkepala raksasa menyerang kamp.', 'Halaman 3: Keris pusaka di pinggang Danu melayang dan menebas bayangan itu.', 'Halaman 4: "Takdirmu telah terkunci sebagai ksatria pelindung," kata arwah.'] }
+    ]
+  },
+  {
+    id: 'c4',
+    title: 'Siber-Rakyat 2088',
+    author: 'Roni Cyber',
+    rating: 4.7,
+    views: '640K',
+    synopsis: 'Kota Jakarta tahun 2088 telah berubah menjadi megacity futuristik yang dikuasai korporasi teknologi hitam. Kelompok peretas jalanan "Siber-Rakyat" berjuang mengembalikan keadilan menggunakan teknologi modifikasi tubuh.',
+    genre: 'Sci-Fi',
+    status: 'Ongoing',
+    premiumOnly: false,
+    bannerColor: 'from-zinc-900 to-teal-950',
+    coverGradient: 'from-teal-500 to-slate-900',
+    episodes: [
+      { id: 'c4-e1', title: 'Episode 1: Neon di Atas Kumuh', isPremium: false, content: ['Halaman 1: Gedung pencakar langit hologram menjulang tinggi.', 'Halaman 2: Di bawah jembatan layang, Adi memprogram implan cybernetic matanya.', 'Halaman 3: "Sinyal korporasi terdeteksi membawa data ilegal," lapor AI asisten.', 'Halaman 4: Adi memakai helm neonnya, bersiap melakukan infiltrasi malam ini.'] },
+      { id: 'c4-e2', title: 'Episode 2: Menembus Firewall Korporat (VIP)', isPremium: true, content: ['Halaman 1: Adi merayap di lorong ventilasi udara server utama.', 'Halaman 2: Laser pertahanan menyala merah menghalangi jalan.', 'Halaman 3: Dengan gerakan akrobatik cyber, dia berhasil menembus celah sempit.', 'Halaman 4: Sebuah rahasia konspirasi genetik maha besar kini di depan matanya.'] }
+    ]
+  }
+];
+
+// === LIST LAYANAN SUBSCRIPTION ===
+const PRICING_PLANS = [
+  {
+    id: 'plan-weekly',
+    name: 'Mingguan VIP',
+    price: 'Rp 15.000',
+    duration: '7 Hari',
+    benefits: [
+      'Akses ke semua Episode Premium',
+      'Baca 3 hari lebih cepat dari free user',
+      'Bebas iklan mengganggu',
+      'Kualitas gambar HD'
+    ],
+    popular: false,
+    badgeColor: 'bg-zinc-800 text-zinc-300'
+  },
+  {
+    id: 'plan-monthly',
+    name: 'Bulanan VIP',
+    price: 'Rp 45.000',
+    duration: '30 Hari',
+    benefits: [
+      'Semua keuntungan paket mingguan',
+      'Download offline tak terbatas',
+      'Lencana profil khusus member VIP',
+      'Kupon diskon merch bulanan'
+    ],
+    popular: true,
+    badgeColor: 'bg-gradient-to-r from-amber-500 to-yellow-600 text-black font-semibold'
+  },
+  {
+    id: 'plan-annual',
+    name: 'Tahunan VIP',
+    price: 'Rp 399.000',
+    duration: '365 Hari',
+    benefits: [
+      'Semua keuntungan paket bulanan',
+      'Hemat lebih dari 25% dibanding bulanan',
+      'Kesempatan ikut kuis merchandise eksklusif',
+      'Akses prioritas event komunitas komikus'
+    ],
+    popular: false,
+    badgeColor: 'bg-purple-600 text-white'
+  }
+];
+
+export default function App() {
+  // Navigation & Screen Control
+  const [currentScreen, setCurrentScreen] = useState('home'); // home, detail, reader, subscribe, library
+  const [selectedComicId, setSelectedComicId] = useState(null);
+  const [selectedEpisodeId, setSelectedEpisodeId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedGenre, setSelectedGenre] = useState('Semua');
+
+  // Subscription State
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [activePlan, setActivePlan] = useState(null);
+  const [isSubscribingProcess, setIsSubscribingProcess] = useState(false);
+  const [checkoutPlan, setCheckoutPlan] = useState(null);
+  
+  // Custom Alerts / Toast Notifications
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+  // Bookmarks and History
+  const [favorites, setFavorites] = useState(['c1']); // Prefill with one
+  const [history, setHistory] = useState([
+    { comicId: 'c1', episodeId: 'c1-e1', readAt: 'Hari ini' }
+  ]);
+
+  // Mobile menu control
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Helper Toast
+  const triggerToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast({ show: false, message: '', type: 'success' });
+    }, 4000);
+  };
+
+  // Get current active comic
+  const activeComic = COMICS_DATA.find(c => c.id === selectedComicId);
+  const activeEpisode = activeComic?.episodes.find(e => e.id === selectedEpisodeId);
+
+  // Filter comics based on search and genre
+  const filteredComics = COMICS_DATA.filter(comic => {
+    const matchesSearch = comic.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          comic.author.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesGenre = selectedGenre === 'Semua' || comic.genre === selectedGenre;
+    return matchesSearch && matchesGenre;
+  });
+
+  const handleToggleFavorite = (comicId, e) => {
+    if (e) e.stopPropagation();
+    if (favorites.includes(comicId)) {
+      setFavorites(favorites.filter(id => id !== comicId));
+      triggerToast('Dihapus dari Favorit Saya', 'info');
+    } else {
+      setFavorites([...favorites, comicId]);
+      triggerToast('Ditambahkan ke Favorit Saya!', 'success');
+    }
+  };
+
+  const handleSelectComic = (comicId) => {
+    setSelectedComicId(comicId);
+    setCurrentScreen('detail');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleReadEpisode = (comicId, episodeId) => {
+    const comic = COMICS_DATA.find(c => c.id === comicId);
+    const episode = comic.episodes.find(e => e.id === episodeId);
+
+    // Check Paywall
+    if (episode.isPremium && !isSubscribed) {
+      // Trigger Paywall Modal / Redirect to subscribe
+      setCheckoutPlan(PRICING_PLANS[1]); // Default to popular plan
+      setCurrentScreen('subscribe');
+      triggerToast('Konten ini khusus VIP. Silakan berlangganan terlebih dahulu!', 'error');
+      return;
+    }
+
+    // Save to History
+    const alreadyInHistory = history.some(h => h.comicId === comicId && h.episodeId === episodeId);
+    if (!alreadyInHistory) {
+      setHistory([{ comicId, episodeId, readAt: 'Baru saja' }, ...history]);
+    }
+
+    setSelectedComicId(comicId);
+    setSelectedEpisodeId(episodeId);
+    setCurrentScreen('reader');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSubscribeAction = (plan) => {
+    setCheckoutPlan(plan);
+    setIsSubscribingProcess(true);
+  };
+
+  const handleConfirmPayment = (cardNumber, cardName) => {
+    if (!cardNumber || !cardName) {
+      triggerToast('Mohon isi formulir pembayaran dengan lengkap!', 'error');
+      return;
+    }
+    
+    // Simulate API delay
+    setTimeout(() => {
+      setIsSubscribed(true);
+      setActivePlan(checkoutPlan);
+      setIsSubscribingProcess(false);
+      setCurrentScreen('home');
+      triggerToast(`Selamat! Anda telah mengaktifkan Paket ${checkoutPlan.name}!`, 'success');
+    }, 1500);
+  };
+
+  const handleCancelSubscription = () => {
+    setIsSubscribed(false);
+    setActivePlan(null);
+    triggerToast('Langganan VIP Anda telah dihentikan.', 'info');
+  };
+
+  // Genre list for filtering
+  const genres = ['Semua', 'Aksi', 'Romantis', 'Fantasi', 'Sci-Fi'];
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-purple-600 selection:text-white">
+      
+      {/* TOAST NOTIFICATION */}
+      {toast.show && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-2xl transition-all animate-bounce max-w-sm w-full border border-slate-700 bg-slate-900">
+          {toast.type === 'success' ? (
+            <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
+          ) : toast.type === 'error' ? (
+            <AlertCircle className="w-5 h-5 text-rose-500 shrink-0" />
+          ) : (
+            <Sparkles className="w-5 h-5 text-cyan-400 shrink-0" />
+          )}
+          <span className="text-sm font-medium">{toast.message}</span>
+        </div>
+      )}
+
+      {/* NAVBAR */}
+      <header className="sticky top-0 z-40 backdrop-blur-md bg-slate-950/80 border-b border-slate-900 transition-all duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          
+          {/* Logo & Brand */}
+          <div 
+            onClick={() => { setCurrentScreen('home'); window.scrollTo(0, 0); }} 
+            className="flex items-center gap-2 cursor-pointer group"
+          >
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-purple-500/20 group-hover:scale-105 transition-transform">
+              <BookOpen className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-purple-400">
+                Komik<span className="text-purple-500">Nesia</span>
+              </span>
+              <span className="block text-[10px] text-slate-400 -mt-1 font-semibold tracking-widest uppercase">VIP PORTAL</span>
+            </div>
+          </div>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
+            <button 
+              onClick={() => setCurrentScreen('home')} 
+              className={`hover:text-purple-400 transition-colors ${currentScreen === 'home' ? 'text-purple-400 font-semibold' : 'text-slate-400'}`}
+            >
+              Beranda
+            </button>
+            <button 
+              onClick={() => setCurrentScreen('library')} 
+              className={`hover:text-purple-400 transition-colors ${currentScreen === 'library' ? 'text-purple-400 font-semibold' : 'text-slate-400'}`}
+            >
+              Perpustakaanku
+            </button>
+            <button 
+              onClick={() => setCurrentScreen('subscribe')} 
+              className={`flex items-center gap-1 hover:text-amber-400 transition-colors ${currentScreen === 'subscribe' ? 'text-amber-400 font-semibold' : 'text-slate-400'}`}
+            >
+              <Crown className="w-4 h-4 text-amber-500" />
+              Paket VIP
+            </button>
+          </nav>
+
+          {/* Action Area */}
+          <div className="flex items-center gap-4">
+            
+            {/* Status Subscription Indicator */}
+            {isSubscribed ? (
+              <div className="hidden sm:flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1 rounded-full text-xs font-semibold">
+                <Crown className="w-3.5 h-3.5 fill-amber-400" />
+                <span>MEMBER VIP</span>
+              </div>
+            ) : (
+              <button 
+                onClick={() => setCurrentScreen('subscribe')} 
+                className="hidden sm:flex items-center gap-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg shadow-purple-600/20 transition-all active:scale-95"
+              >
+                <Crown className="w-3.5 h-3.5" />
+                Gabung VIP
+              </button>
+            )}
+
+            {/* Profile Menu Placeholder */}
+            <div className="flex items-center gap-2 border-l border-slate-800 pl-4">
+              <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700 hover:border-purple-500 transition-colors">
+                <User className="w-4 h-4 text-slate-300" />
+              </div>
+            </div>
+
+            {/* Mobile Menu Toggle */}
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 text-slate-400 hover:text-white hover:bg-slate-900 rounded-lg"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Dropdown Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-slate-950 border-b border-slate-900 px-4 pt-2 pb-4 space-y-2">
+            <button 
+              onClick={() => { setCurrentScreen('home'); setMobileMenuOpen(false); }} 
+              className="w-full text-left py-2 px-3 hover:bg-slate-900 rounded-lg text-slate-300 font-medium"
+            >
+              Beranda
+            </button>
+            <button 
+              onClick={() => { setCurrentScreen('library'); setMobileMenuOpen(false); }} 
+              className="w-full text-left py-2 px-3 hover:bg-slate-900 rounded-lg text-slate-300 font-medium"
+            >
+              Perpustakaanku
+            </button>
+            <button 
+              onClick={() => { setCurrentScreen('subscribe'); setMobileMenuOpen(false); }} 
+              className="w-full text-left py-2 px-3 hover:bg-slate-900 rounded-lg text-amber-400 font-semibold flex items-center gap-2"
+            >
+              <Crown className="w-4 h-4 text-amber-500 fill-amber-500/20" />
+              Paket VIP
+            </button>
+            {!isSubscribed && (
+              <button 
+                onClick={() => { setCurrentScreen('subscribe'); setMobileMenuOpen(false); }} 
+                className="w-full text-center py-2.5 mt-2 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg text-white font-bold text-sm"
+              >
+                Langganan VIP Sekarang
+              </button>
+            )}
+          </div>
+        )}
+      </header>
+
+      {/* MAIN CONTAINER */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        {/* ========================================================
+            SCREEN 1: HOME PAGE
+           ======================================================== */}
+        {currentScreen === 'home' && (
+          <div className="space-y-12 animate-fadeIn">
+            
+            {/* HERO PROMOTIONAL BANNER */}
+            <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-purple-900 via-indigo-950 to-slate-950 p-8 sm:p-12 border border-purple-500/20 shadow-2xl">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-purple-500/10 via-transparent to-transparent"></div>
+              <div className="relative z-10 max-w-2xl space-y-4">
+                <span className="inline-flex items-center gap-1.5 bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold px-3 py-1 rounded-full">
+                  <Sparkles className="w-3.5 h-3.5" /> Unlocked VIP Experience
+                </span>
+                <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                  Baca Ribuan Chapter Tanpa Batas Tunggu!
+                </h1>
+                <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+                  Gabung VIP KomikNesia hari ini. Dapatkan akses instan ke chapter-chapter terbaru berlabel Premium, kualitas gambar super tajam, dan dukung kreator komik favorit tanah air!
+                </p>
+                <div className="pt-2 flex flex-wrap gap-4">
+                  {isSubscribed ? (
+                    <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-5 py-3 rounded-2xl flex items-center gap-2 font-semibold">
+                      <ShieldCheck className="w-5 h-5" />
+                      <span>Berlangganan Aktif ({activePlan?.name})</span>
+                    </div>
+                  ) : (
+                    <>
+                      <button 
+                        onClick={() => setCurrentScreen('subscribe')}
+                        className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-6 py-3 rounded-2xl flex items-center gap-2 shadow-lg shadow-amber-500/20 active:scale-95 transition-all text-sm sm:text-base"
+                      >
+                        <Crown className="w-5 h-5 fill-slate-950" />
+                        Mulai Langganan VIP
+                      </button>
+                      <button 
+                        onClick={() => {
+                          const element = document.getElementById('semua-komik');
+                          element?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="bg-slate-900 hover:bg-slate-850 text-slate-300 border border-slate-800 font-semibold px-6 py-3 rounded-2xl text-sm sm:text-base transition-colors"
+                      >
+                        Jelajahi Gratis
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+              
+              {/* Abstract decorative floating element */}
+              <div className="hidden lg:block absolute right-12 top-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-3xl opacity-20 blur-xl animate-pulse"></div>
+            </div>
+
+            {/* BANNER PROMOSI DUA KOLOM */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-slate-900/60 p-6 rounded-2xl border border-slate-800 flex items-center justify-between gap-4">
+                <div className="space-y-2">
+                  <h3 className="font-bold text-lg text-white">Promo Spesial Bulan Juni!</h3>
+                  <p className="text-xs text-slate-400">Gunakan metode pembayaran dompet digital dan hemat biaya administrasi hingga Rp 5.000!</p>
+                </div>
+                <div className="w-16 h-16 rounded-xl bg-purple-900/30 border border-purple-500/20 flex items-center justify-center shrink-0">
+                  <CreditCard className="w-8 h-8 text-purple-400" />
+                </div>
+              </div>
+
+              <div className="bg-slate-900/60 p-6 rounded-2xl border border-slate-800 flex items-center justify-between gap-4">
+                <div className="space-y-2">
+                  <h3 className="font-bold text-lg text-white">Butuh bantuan transaksi?</h3>
+                  <p className="text-xs text-slate-400">Layanan dukungan pelanggan kami aktif 24/7 untuk memastikan keanggotaan VIP Anda lancar.</p>
+                </div>
+                <div className="w-16 h-16 rounded-xl bg-indigo-900/30 border border-indigo-500/20 flex items-center justify-center shrink-0">
+                  <ShieldCheck className="w-8 h-8 text-indigo-400" />
+                </div>
+              </div>
+            </div>
+
+            {/* FILTER & PENCARIAN */}
+            <div id="semua-komik" className="space-y-6 pt-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                    <Flame className="w-6 h-6 text-purple-500" /> Katalog Komik Terpopuler
+                  </h2>
+                  <p className="text-xs text-slate-400">Temukan petualangan menakjubkan dari komikus andal</p>
+                </div>
+
+                {/* Search Bar */}
+                <div className="relative max-w-sm w-full">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <input 
+                    type="text" 
+                    placeholder="Cari komik atau author..." 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 text-slate-200 placeholder:text-slate-500"
+                  />
+                </div>
+              </div>
+
+              {/* Genre Tabs */}
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+                {genres.map((genre) => (
+                  <button
+                    key={genre}
+                    onClick={() => setSelectedGenre(genre)}
+                    className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${
+                      selectedGenre === genre 
+                        ? 'bg-purple-600 text-white shadow-md shadow-purple-600/10' 
+                        : 'bg-slate-900 text-slate-400 hover:bg-slate-850 hover:text-slate-200 border border-slate-800'
+                    }`}
+                  >
+                    {genre}
+                  </button>
+                ))}
+              </div>
+
+              {/* COMICS GRID */}
+              {filteredComics.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                  {filteredComics.map((comic) => (
+                    <div 
+                      key={comic.id}
+                      onClick={() => handleSelectComic(comic.id)}
+                      className="group cursor-pointer bg-slate-900/50 hover:bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 hover:border-purple-500/30 transition-all duration-300 transform hover:-translate-y-1"
+                    >
+                      {/* Comic Cover Simulator */}
+                      <div className={`relative h-48 sm:h-60 bg-gradient-to-br ${comic.coverGradient} p-4 flex flex-col justify-end overflow-hidden`}>
+                        {/* Overlay Gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+                        
+                        {/* Tags */}
+                        <div className="absolute top-3 left-3 flex flex-wrap gap-1">
+                          {comic.premiumOnly ? (
+                            <span className="bg-gradient-to-r from-amber-500 to-yellow-600 text-slate-950 text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-0.5 shadow-md">
+                              <Crown className="w-3.5 h-3.5 fill-slate-950" /> VIP ONLY
+                            </span>
+                          ) : (
+                            <span className="bg-slate-900/80 backdrop-blur-md text-slate-200 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                              FREE / VIP
+                            </span>
+                          )}
+                          <span className="bg-purple-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
+                            {comic.genre}
+                          </span>
+                        </div>
+
+                        {/* Heart Bookmark Icon */}
+                        <button 
+                          onClick={(e) => handleToggleFavorite(comic.id, e)}
+                          className="absolute top-3 right-3 p-2 bg-slate-950/80 backdrop-blur-md hover:bg-purple-600 rounded-full text-slate-300 hover:text-white transition-colors"
+                        >
+                          <Heart className={`w-4 h-4 ${favorites.includes(comic.id) ? 'fill-rose-500 text-rose-500' : ''}`} />
+                        </button>
+
+                        {/* Title of the Cover inside Image Placeholder */}
+                        <div className="relative z-10 space-y-1">
+                          <span className="text-[10px] text-slate-300 font-semibold">{comic.author}</span>
+                          <h4 className="text-sm sm:text-base font-bold text-white line-clamp-1">{comic.title}</h4>
+                        </div>
+                      </div>
+
+                      {/* Info Panel Below */}
+                      <div className="p-3 sm:p-4 space-y-2">
+                        <div className="flex items-center justify-between text-xs text-slate-400">
+                          <span className="flex items-center gap-1">
+                            ⭐ <span className="text-white font-medium">{comic.rating}</span>
+                          </span>
+                          <span>{comic.views} pembaca</span>
+                        </div>
+                        <div className="text-[10px] sm:text-xs text-slate-400 line-clamp-2">
+                          {comic.synopsis}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12 bg-slate-900/30 rounded-2xl border border-slate-800">
+                  <p className="text-slate-400">Komik tidak ditemukan untuk filter ini.</p>
+                  <button 
+                    onClick={() => { setSearchQuery(''); setSelectedGenre('Semua'); }}
+                    className="mt-3 text-sm text-purple-400 hover:underline"
+                  >
+                    Reset Filter Pencarian
+                  </button>
+                </div>
+              )}
+            </div>
+
+          </div>
+        )}
+
+        {/* ========================================================
+            SCREEN 2: COMIC DETAIL
+           ======================================================== */}
+        {currentScreen === 'detail' && activeComic && (
+          <div className="space-y-8 animate-fadeIn">
+            
+            {/* Back Button */}
+            <button 
+              onClick={() => setCurrentScreen('home')}
+              className="inline-flex items-center gap-1 text-sm text-slate-400 hover:text-white font-medium transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" /> Kembali ke Beranda
+            </button>
+
+            {/* Comic Header Banner */}
+            <div className={`relative rounded-3xl overflow-hidden bg-gradient-to-r ${activeComic.bannerColor} p-6 sm:p-10 border border-slate-800`}>
+              <div className="absolute inset-0 bg-slate-950/40"></div>
+              <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start">
+                
+                {/* Simulated Big Cover Artwork */}
+                <div className={`w-full md:w-56 h-72 rounded-2xl bg-gradient-to-br ${activeComic.coverGradient} shadow-xl shrink-0 p-6 flex flex-col justify-end border border-white/10`}>
+                  <span className="bg-slate-950/80 backdrop-blur-sm self-start text-[10px] font-bold px-2.5 py-1 rounded-md mb-2">
+                    {activeComic.genre}
+                  </span>
+                  <h3 className="text-xl font-black text-white leading-tight">{activeComic.title}</h3>
+                  <p className="text-xs text-slate-200 mt-1">{activeComic.author}</p>
+                </div>
+
+                {/* Comic Information */}
+                <div className="space-y-4 max-w-3xl">
+                  <div className="flex flex-wrap gap-2">
+                    <span className="bg-purple-600/20 text-purple-400 border border-purple-500/30 text-xs font-bold px-3 py-1 rounded-full">
+                      {activeComic.genre}
+                    </span>
+                    <span className="bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 text-xs font-bold px-3 py-1 rounded-full">
+                      {activeComic.status}
+                    </span>
+                    {activeComic.premiumOnly && (
+                      <span className="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                        <Crown className="w-3.5 h-3.5 fill-amber-400" /> VIP EKSKLUSIF
+                      </span>
+                    )}
+                  </div>
+
+                  <h1 className="text-3xl sm:text-4xl font-extrabold text-white">{activeComic.title}</h1>
+                  
+                  <div className="flex items-center gap-6 text-sm text-slate-300">
+                    <div>Penulis: <span className="text-white font-medium">{activeComic.author}</span></div>
+                    <div>Rating: ⭐ <span className="text-white font-semibold">{activeComic.rating}</span></div>
+                    <div>Pembaca: <span className="text-white font-semibold">{activeComic.views}</span></div>
+                  </div>
+
+                  <div className="p-4 bg-slate-950/40 backdrop-blur-sm rounded-xl border border-white/5 space-y-1">
+                    <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Sinopsis</h5>
+                    <p className="text-sm text-slate-200 leading-relaxed">
+                      {activeComic.synopsis}
+                    </p>
+                  </div>
+
+                  {/* Actions buttons */}
+                  <div className="flex flex-wrap gap-4 pt-2">
+                    <button 
+                      onClick={() => handleReadEpisode(activeComic.id, activeComic.episodes[0].id)}
+                      className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-3 rounded-xl flex items-center gap-2 shadow-lg shadow-purple-600/10 active:scale-95 transition-all text-sm"
+                    >
+                      <BookOpen className="w-4 h-4" /> Baca Episode 1 (Gratis)
+                    </button>
+                    <button 
+                      onClick={(e) => handleToggleFavorite(activeComic.id, e)}
+                      className={`px-5 py-3 rounded-xl border font-bold text-sm flex items-center gap-2 transition-all ${
+                        favorites.includes(activeComic.id) 
+                          ? 'border-rose-500/30 bg-rose-500/10 text-rose-400' 
+                          : 'border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700'
+                      }`}
+                    >
+                      <Heart className={`w-4 h-4 ${favorites.includes(activeComic.id) ? 'fill-rose-500 text-rose-500' : ''}`} />
+                      {favorites.includes(activeComic.id) ? 'Disimpan' : 'Simpan Ke Favorit'}
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* Episode List */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-purple-500" /> Daftar Episode
+                </h3>
+                <span className="text-xs text-slate-400">{activeComic.episodes.length} Episode Tersedia</span>
+              </div>
+
+              <div className="space-y-2">
+                {activeComic.episodes.map((episode) => {
+                  const isLocked = episode.isPremium && !isSubscribed;
+                  return (
+                    <div 
+                      key={episode.id}
+                      onClick={() => handleReadEpisode(activeComic.id, episode.id)}
+                      className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all ${
+                        isLocked 
+                          ? 'bg-slate-900/30 border-slate-900 text-slate-500 hover:bg-slate-900/50' 
+                          : 'bg-slate-900 border-slate-800 hover:border-purple-500/40 text-slate-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
+                          isLocked ? 'bg-slate-950 text-slate-600' : 'bg-purple-950 text-purple-400 border border-purple-900/40'
+                        }`}>
+                          {isLocked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
+                        </div>
+                        <div>
+                          <h4 className={`text-sm sm:text-base font-bold ${isLocked ? 'text-slate-500' : 'text-slate-200'}`}>
+                            {episode.title}
+                          </h4>
+                          <span className="text-[11px] text-slate-400">Rilis Terbaru</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {episode.isPremium ? (
+                          <span className={`text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-md flex items-center gap-1 ${
+                            isLocked 
+                              ? 'bg-amber-500/10 text-amber-500/80 border border-amber-500/20' 
+                              : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                          }`}>
+                            <Crown className="w-3.5 h-3.5 fill-current" /> VIP {isLocked ? 'Locked' : 'Unlocked'}
+                          </span>
+                        ) : (
+                          <span className="text-[10px] sm:text-xs font-bold bg-slate-850 text-slate-400 px-2.5 py-1 rounded-md">
+                            GRATIS
+                          </span>
+                        )}
+                        <ChevronRight className="w-4 h-4 text-slate-600" />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* ========================================================
+            SCREEN 3: COMIC READER
+           ======================================================== */}
+        {currentScreen === 'reader' && activeComic && activeEpisode && (
+          <div className="space-y-6 max-w-3xl mx-auto animate-fadeIn">
+            
+            {/* Top Toolbar */}
+            <div className="flex items-center justify-between bg-slate-900 p-4 rounded-2xl border border-slate-800">
+              <button 
+                onClick={() => setCurrentScreen('detail')}
+                className="flex items-center gap-1 text-sm text-slate-400 hover:text-white"
+              >
+                <ChevronLeft className="w-4 h-4" /> Detail Komik
+              </button>
+
+              <div className="text-center">
+                <span className="block text-[11px] text-slate-400 font-semibold uppercase tracking-wider">{activeComic.title}</span>
+                <span className="block text-sm font-bold text-white line-clamp-1">{activeEpisode.title}</span>
+              </div>
+
+              {/* Share placeholder */}
+              <button 
+                onClick={() => triggerToast('Tautan berhasil disalin ke clipboard!', 'success')}
+                className="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white"
+              >
+                <Share2 className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Simulated Content Reader (Webtoon Style Scrolling) */}
+            <div className="bg-slate-950 border border-slate-900 rounded-2xl p-4 sm:p-8 space-y-4">
+              {activeEpisode.content.map((text, idx) => (
+                <div 
+                  key={idx} 
+                  className="aspect-[4/5] w-full rounded-xl bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 p-6 flex flex-col justify-between relative overflow-hidden"
+                >
+                  <div className="absolute inset-0 opacity-5 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                  <div className="text-xs text-slate-500 font-bold tracking-widest uppercase">
+                    PANEL {idx + 1}
+                  </div>
+                  
+                  {/* Comic Illustration placeholder */}
+                  <div className="my-auto text-center space-y-4 relative z-10 px-4">
+                    <p className="text-base sm:text-lg font-bold text-slate-100 italic">"{text}"</p>
+                    <div className="w-20 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 mx-auto rounded"></div>
+                  </div>
+
+                  <div className="text-[10px] text-slate-600 text-right">
+                    © KomikNesia Platform
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Reader Bottom Navigation */}
+            <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+              
+              {/* Prev Chapter */}
+              {(() => {
+                const currentIndex = activeComic.episodes.findIndex(e => e.id === selectedEpisodeId);
+                const prevEpisode = activeComic.episodes[currentIndex - 1];
+                return (
+                  <button
+                    onClick={() => prevEpisode && handleReadEpisode(activeComic.id, prevEpisode.id)}
+                    disabled={!prevEpisode}
+                    className="px-4 py-2 bg-slate-950 text-slate-300 rounded-xl hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm font-semibold border border-slate-800 flex items-center gap-1"
+                  >
+                    <ChevronLeft className="w-4 h-4" /> Episode Seb
+                  </button>
+                );
+              })()}
+
+              <button 
+                onClick={() => setCurrentScreen('detail')}
+                className="text-xs sm:text-sm text-purple-400 font-bold hover:underline"
+              >
+                Kembali ke Menu Utama
+              </button>
+
+              {/* Next Chapter */}
+              {(() => {
+                const currentIndex = activeComic.episodes.findIndex(e => e.id === selectedEpisodeId);
+                const nextEpisode = activeComic.episodes[currentIndex + 1];
+                return (
+                  <button
+                    onClick={() => nextEpisode && handleReadEpisode(activeComic.id, nextEpisode.id)}
+                    disabled={!nextEpisode}
+                    className="px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm font-semibold flex items-center gap-1"
+                  >
+                    Episode Sel <ChevronRight className="w-4 h-4" />
+                  </button>
+                );
+              })()}
+            </div>
+
+          </div>
+        )}
+
+        {/* ========================================================
+            SCREEN 4: SUBSCRIPTION & PAYMENTS
+           ======================================================== */}
+        {currentScreen === 'subscribe' && (
+          <div className="space-y-8 animate-fadeIn">
+            
+            {/* Header */}
+            <div className="text-center max-w-xl mx-auto space-y-2">
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-white flex items-center justify-center gap-2">
+                <Crown className="w-8 h-8 text-amber-500 fill-amber-500/20" /> Akun VIP KomikNesia
+              </h1>
+              <p className="text-sm text-slate-400">
+                Akses semua komik premium eksklusif langsung dari perangkat Anda secara tak terbatas. Bebas iklan, bebas tunggu!
+              </p>
+            </div>
+
+            {/* Current status if subscribed */}
+            {isSubscribed && activePlan && (
+              <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-2xl p-6 max-w-xl mx-auto flex items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">LANGGANAN AKTIF</span>
+                  <h4 className="text-xl font-bold text-white">{activePlan.name}</h4>
+                  <p className="text-xs text-slate-400">Harga: {activePlan.price} / {activePlan.duration}</p>
+                </div>
+                <button 
+                  onClick={handleCancelSubscription}
+                  className="px-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs hover:bg-rose-950 hover:text-rose-400 hover:border-rose-500/20 transition-all font-semibold"
+                >
+                  Hentikan VIP
+                </button>
+              </div>
+            )}
+
+            {/* PRICING PLANS GRID */}
+            {!isSubscribingProcess ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {PRICING_PLANS.map((plan) => (
+                  <div 
+                    key={plan.id}
+                    className={`relative rounded-3xl p-6 bg-slate-900 border flex flex-col justify-between space-y-6 ${
+                      plan.popular 
+                        ? 'border-purple-500 ring-2 ring-purple-500/20 shadow-2xl shadow-purple-500/5' 
+                        : 'border-slate-800'
+                    }`}
+                  >
+                    {plan.popular && (
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-[10px] font-bold px-4 py-1 rounded-full uppercase tracking-wider">
+                        Paling Rekomendasi
+                      </span>
+                    )}
+
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="text-lg font-bold text-white">{plan.name}</h4>
+                          <span className="text-[10px] text-slate-400">Akses Tanpa Hambatan</span>
+                        </div>
+                        <span className={`text-[10px] px-2.5 py-1 rounded-md ${plan.badgeColor}`}>
+                          {plan.duration}
+                        </span>
+                      </div>
+
+                      <div className="py-2">
+                        <span className="text-2xl sm:text-3xl font-extrabold text-white">{plan.price}</span>
+                        <span className="text-slate-500 text-xs"> / {plan.duration}</span>
+                      </div>
+
+                      <div className="space-y-2 border-t border-slate-850 pt-4">
+                        {plan.benefits.map((benefit, idx) => (
+                          <div key={idx} className="flex items-start gap-2 text-xs sm:text-sm text-slate-300">
+                            <Check className="w-4.5 h-4.5 text-emerald-500 shrink-0 mt-0.5" />
+                            <span>{benefit}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => handleSubscribeAction(plan)}
+                      className={`w-full py-3 rounded-xl text-sm font-bold transition-all active:scale-95 ${
+                        plan.popular 
+                          ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-lg shadow-purple-600/15' 
+                          : 'bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white'
+                      }`}
+                    >
+                      Pilih Paket {plan.name}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              /* SIMULASI FORMULIR PEMBAYARAN KARTU KREDIT */
+              <div className="max-w-lg mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
+                <div className="flex items-center justify-between border-b border-slate-850 pb-4">
+                  <div>
+                    <h3 className="font-bold text-white text-lg">Metode Pembayaran Instan</h3>
+                    <p className="text-xs text-slate-400">Pembayaran aman terenkripsi</p>
+                  </div>
+                  <button 
+                    onClick={() => setIsSubscribingProcess(false)}
+                    className="p-2 hover:bg-slate-800 rounded-lg text-slate-400"
+                  >
+                    Batal
+                  </button>
+                </div>
+
+                {/* Ringkasan Belanja */}
+                <div className="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-2">
+                  <span className="text-[10px] font-bold text-purple-400 uppercase tracking-widest">Detail Pesanan</span>
+                  <div className="flex justify-between text-sm">
+                    <span className="font-semibold text-white">{checkoutPlan?.name} ({checkoutPlan?.duration})</span>
+                    <span className="font-bold text-white">{checkoutPlan?.price}</span>
+                  </div>
+                  <div className="flex justify-between text-xs text-slate-400 border-t border-slate-900 pt-2">
+                    <span>Biaya Layanan</span>
+                    <span>Rp 0 (Gratis)</span>
+                  </div>
+                </div>
+
+                {/* Form Input Kartu Kredit Simulator */}
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const fd = new FormData(e.target);
+                    handleConfirmPayment(fd.get('cardNumber'), fd.get('cardName'));
+                  }} 
+                  className="space-y-4"
+                >
+                  <div className="space-y-1">
+                    <label className="block text-xs font-bold text-slate-400 uppercase">Nomor Kartu (Simulasi)</label>
+                    <input 
+                      required
+                      name="cardNumber"
+                      type="text" 
+                      placeholder="4111 2222 3333 4444" 
+                      maxLength="19"
+                      defaultValue="4111 5566 2200 9988"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-purple-500 text-slate-200"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-400 uppercase">Kadaluarsa</label>
+                      <input 
+                        required
+                        type="text" 
+                        placeholder="MM / YY" 
+                        maxLength="5"
+                        defaultValue="12/29"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-purple-500 text-slate-200 text-center"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-slate-400 uppercase">CVV / CVC</label>
+                      <input 
+                        required
+                        type="password" 
+                        placeholder="***" 
+                        maxLength="3"
+                        defaultValue="123"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-purple-500 text-slate-200 text-center"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-xs font-bold text-slate-400 uppercase">Nama Pemilik Kartu</label>
+                    <input 
+                      required
+                      name="cardName"
+                      type="text" 
+                      placeholder="Budi Santoso" 
+                      defaultValue="Ahmad Budi"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-purple-500 text-slate-200"
+                    />
+                  </div>
+
+                  <div className="pt-4 space-y-2">
+                    <button
+                      type="submit"
+                      className="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition-all shadow-lg shadow-emerald-500/10"
+                    >
+                      Bayar Sekarang & Aktifkan VIP
+                    </button>
+                    <p className="text-center text-[10px] text-slate-500">
+                      Dengan menekan tombol, Anda menyetujui Ketentuan Layanan KomikNesia.
+                    </p>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* Testimonials or trust elements */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center max-w-4xl mx-auto pt-6 border-t border-slate-900">
+              <div className="p-4 space-y-1">
+                <span className="block text-xl font-bold text-purple-400">100% Aman</span>
+                <span className="block text-xs text-slate-400">Sertifikasi keamanan tingkat perbankan komersial</span>
+              </div>
+              <div className="p-4 space-y-1">
+                <span className="block text-xl font-bold text-indigo-400">Batal Kapan Saja</span>
+                <span className="block text-xs text-slate-400">Tidak ada komitmen jangka panjang paksaan</span>
+              </div>
+              <div className="p-4 space-y-1">
+                <span className="block text-xl font-bold text-amber-400">Dukungan Kreator</span>
+                <span className="block text-xs text-slate-400">Sebagian besar dana langganan dibagikan ke komikus</span>
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* ========================================================
+            SCREEN 5: MY LIBRARY (BOOKMARKS & HISTORY)
+           ======================================================== */}
+        {currentScreen === 'library' && (
+          <div className="space-y-8 animate-fadeIn">
+            
+            <div className="space-y-2">
+              <h1 className="text-3xl font-extrabold text-white flex items-center gap-2">
+                <Bookmark className="text-purple-500 w-8 h-8" /> Perpustakaanku
+              </h1>
+              <p className="text-sm text-slate-400">Pantau koleksi komik favorit dan riwayat membaca Anda di sini.</p>
+            </div>
+
+            {/* Bookmarks Section */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <Heart className="w-5 h-5 text-rose-500 fill-rose-500" /> Komik Terfavorit ({favorites.length})
+              </h3>
+
+              {favorites.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                  {COMICS_DATA.filter(c => favorites.includes(c.id)).map((comic) => (
+                    <div 
+                      key={comic.id}
+                      onClick={() => handleSelectComic(comic.id)}
+                      className="group cursor-pointer bg-slate-900/50 hover:bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 hover:border-purple-500/30 transition-all duration-300"
+                    >
+                      <div className={`relative h-40 bg-gradient-to-br ${comic.coverGradient} p-4 flex flex-col justify-end`}>
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+                        <button 
+                          onClick={(e) => handleToggleFavorite(comic.id, e)}
+                          className="absolute top-2 right-2 p-1.5 bg-slate-950/80 backdrop-blur-md rounded-full text-rose-500"
+                        >
+                          <Heart className="w-4 h-4 fill-rose-500" />
+                        </button>
+                        <span className="text-[10px] text-slate-300 font-semibold relative z-10">{comic.author}</span>
+                        <h4 className="text-sm font-bold text-white line-clamp-1 relative z-10">{comic.title}</h4>
+                      </div>
+                      <div className="p-3 text-xs text-slate-400">
+                        {comic.genre} • {comic.status}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 bg-slate-900/20 rounded-xl border border-slate-800">
+                  <p className="text-slate-500 text-sm">Belum ada komik yang Anda tambahkan ke favorit.</p>
+                </div>
+              )}
+            </div>
+
+            {/* Reading History Section */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <Clock className="w-5 h-5 text-indigo-400" /> Riwayat Membaca ({history.length})
+              </h3>
+
+              {history.length > 0 ? (
+                <div className="space-y-2">
+                  {history.map((hist, index) => {
+                    const comic = COMICS_DATA.find(c => c.id === hist.comicId);
+                    const ep = comic?.episodes.find(e => e.id === hist.episodeId);
+                    if (!comic || !ep) return null;
+                    return (
+                      <div 
+                        key={index}
+                        onClick={() => handleReadEpisode(comic.id, ep.id)}
+                        className="flex items-center justify-between p-4 bg-slate-900/60 rounded-xl border border-slate-800 hover:border-indigo-500/30 cursor-pointer transition-all"
+                      >
+                        <div>
+                          <h4 className="text-sm sm:text-base font-bold text-white">{comic.title}</h4>
+                          <p className="text-xs text-indigo-400 font-medium mt-0.5">{ep.title}</p>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-[10px] sm:text-xs text-slate-500 block">Dibaca:</span>
+                          <span className="text-[10px] sm:text-xs text-slate-400 font-semibold">{hist.readAt}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-8 bg-slate-900/20 rounded-xl border border-slate-800">
+                  <p className="text-slate-500 text-sm">Belum ada riwayat membaca terdeteksi.</p>
+                </div>
+              )}
+            </div>
+
+          </div>
+        )}
+
+      </main>
+
+      {/* FOOTER */}
+      <footer className="mt-20 border-t border-slate-900 bg-slate-950 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+          
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center">
+                <BookOpen className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-lg font-bold text-white">KomikNesia</span>
+            </div>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Platform web komik independen asli Indonesia dengan sistem langganan paling hemat dan ramah pembaca. Dukung terus industri komik tanah air!
+            </p>
+          </div>
+
+          <div>
+            <h5 className="font-bold text-white text-sm uppercase tracking-wider mb-4">Genre Terpopuler</h5>
+            <ul className="space-y-2 text-xs text-slate-400">
+              <li className="hover:text-purple-400 cursor-pointer" onClick={() => { setSelectedGenre('Aksi'); setCurrentScreen('home'); }}>Aksi & Pertarungan</li>
+              <li className="hover:text-purple-400 cursor-pointer" onClick={() => { setSelectedGenre('Romantis'); setCurrentScreen('home'); }}>Romansa Hangat</li>
+              <li className="hover:text-purple-400 cursor-pointer" onClick={() => { setSelectedGenre('Fantasi'); setCurrentScreen('home'); }}>Fantasi & Kerajaan</li>
+              <li className="hover:text-purple-400 cursor-pointer" onClick={() => { setSelectedGenre('Sci-Fi'); setCurrentScreen('home'); }}>Sains & Teknologi</li>
+            </ul>
+          </div>
+
+          <div>
+            <h5 className="font-bold text-white text-sm uppercase tracking-wider mb-4">Dukungan & Info</h5>
+            <ul className="space-y-2 text-xs text-slate-400">
+              <li className="hover:text-white cursor-pointer">Bantuan Langganan</li>
+              <li className="hover:text-white cursor-pointer">Ketentuan Layanan</li>
+              <li className="hover:text-white cursor-pointer">Kebijakan Privasi</li>
+              <li className="hover:text-white cursor-pointer">Kontak Tim Teknis</li>
+            </ul>
+          </div>
+
+          <div className="space-y-4">
+            <h5 className="font-bold text-white text-sm uppercase tracking-wider mb-2">Metode Pembayaran</h5>
+            <p className="text-xs text-slate-400">Kami mendukung kartu kredit virtual, QRIS otomatis, dan berbagai e-wallet lokal.</p>
+            <div className="flex gap-2">
+              <span className="px-2.5 py-1 bg-slate-900 border border-slate-800 text-[10px] text-slate-300 font-bold rounded">VISA</span>
+              <span className="px-2.5 py-1 bg-slate-900 border border-slate-800 text-[10px] text-slate-300 font-bold rounded">MASTERCARD</span>
+              <span className="px-2.5 py-1 bg-slate-900 border border-slate-800 text-[10px] text-slate-300 font-bold rounded">QRIS</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-slate-900 text-center text-xs text-slate-500">
+          © 2026 KomikNesia VIP. Hak Cipta Dilindungi Undang-Undang.
+        </div>
+      </footer>
+
+    </div>
+  );
+}
